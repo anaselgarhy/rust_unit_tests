@@ -38,6 +38,7 @@ impl From<&str> for SuperVillain {
 
 #[cfg(test)]
 mod tests {
+    use test_context::{test_context, TestContext};
     use super::*;
 
     // Constants.
@@ -49,7 +50,7 @@ mod tests {
         super_villain: SuperVillain,
     }
 
-    impl Context {
+    impl TestContext for Context {
         fn setup() -> Self {
             Context {
                 super_villain: SuperVillain {
@@ -59,7 +60,7 @@ mod tests {
             }
         }
         /// Clean up after tests.
-        fn teardown(&self) {
+        fn teardown(self) {
             // Nothing to do here.
         }
     }
@@ -83,21 +84,20 @@ mod tests {
         }
     }
 
+    #[test_context(Context)]
     #[test]
-    fn test_full_name_with_spaces() {
-        run_test(|ctx| {
-            assert_eq!(ctx.super_villain.full_name(), FULL_NAME, "Unsuspected full name");
-        })
+    fn test_full_name_with_spaces(ctx: &mut Context) {
+        assert_eq!(ctx.super_villain.full_name(), FULL_NAME, "Unsuspected full name");
     }
 
+    #[test_context(Context)]
     #[test]
-    fn test_set_full_name() {
-        run_test(|ctx| {
-            ctx.super_villain.set_full_name(FULL_NAME.to_string());
-            assert_eq!(ctx.super_villain.first_name, FIRST_NAME, "Unsuspected first name");
-            assert_eq!(ctx.super_villain.last_name, LAST_NAME, "Unsuspected last name");
-        })
+    fn test_set_full_name(ctx: &mut Context) {
+        ctx.super_villain.set_full_name(FULL_NAME.to_string());
+        assert_eq!(ctx.super_villain.first_name, FIRST_NAME, "Unsuspected first name");
+        assert_eq!(ctx.super_villain.last_name, LAST_NAME, "Unsuspected last name");
     }
+
 
     #[test]
     fn test_from_str() {
