@@ -98,6 +98,12 @@ mod tests {
         assert_eq!(ctx.super_villain.last_name, LAST_NAME, "Unsuspected last name");
     }
 
+    #[test_context(Context)]
+    #[test]
+    #[should_panic(expected = "index out of bounds: the len is 1 but the index is 1")]
+    fn test_set_full_name_with_empty_string(ctx: &mut Context) {
+        ctx.super_villain.set_full_name("".to_string());
+    }
 
     #[test]
     fn test_from_str() {
