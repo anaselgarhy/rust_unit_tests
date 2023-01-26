@@ -70,11 +70,12 @@ mod tests {
         }
     }
 
+    // Async context, for testing async functions.
     struct AsyncContext {
         super_villain: SuperVillain,
     }
 
-    #[async_trait::async_trait]
+    #[async_trait::async_trait] // We need to apply the `async_trait` macro here, because we're using `async` functions.
     impl AsyncTestContext for AsyncContext {
         async fn setup() -> Self {
             AsyncContext {
@@ -109,7 +110,7 @@ mod tests {
         }
     }
 
-    #[test_context(Context)]
+    #[test_context(Context)] // This attribute will generate a function that will set up the context.
     #[test]
     fn test_full_name_with_spaces(ctx: &mut Context) {
         assert_eq!(ctx.super_villain.full_name(), FULL_NAME, "Unsuspected full name");
@@ -139,8 +140,9 @@ mod tests {
         })
     }
 
+    // Async test.
     #[test_context(AsyncContext)]
-    #[tokio::test]
+    #[tokio::test] // We need to use the `tokio::test` attribute here, because we're using `tokio::time::sleep`.
     async fn plan_is_sadly_expected(ctx: &mut AsyncContext) {
         assert_eq!(ctx.super_villain.come_up_with_plan().await,
                    format!("{} {} is coming up with a plan {}", ctx.super_villain.first_name,
