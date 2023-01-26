@@ -126,6 +126,7 @@ mod tests {
 
     #[test_context(Context)]
     #[test]
+    // We can use the `should_panic` attribute to test that a function panics.
     #[should_panic(expected = "index out of bounds: the len is 1 but the index is 1")]
     fn test_set_full_name_with_empty_string(ctx: &mut Context) {
         ctx.super_villain.set_full_name("".to_string());
