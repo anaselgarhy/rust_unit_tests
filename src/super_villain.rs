@@ -21,6 +21,11 @@ impl SuperVillain {
     pub fn attack(&self, weapon: impl MegaWeapon) {
         weapon.shoot();
     }
+
+    pub async fn come_up_with_plan(&self) -> String {
+        tokio::time::sleep(std::time::Duration::from_secs(1)).await;
+        format!("{} {} is coming up with a plan {}", self.first_name, self.last_name, "To take over the world!")
+    }
 }
 
 
@@ -38,13 +43,13 @@ impl From<&str> for SuperVillain {
 
 #[cfg(test)]
 mod tests {
-    use test_context::{test_context, TestContext};
+    use test_context::{AsyncTestContext, test_context, TestContext};
     use super::*;
 
     // Constants.
-    const FIRST_NAME: &str = "Anas";
-    const LAST_NAME: &str = "Elgarhy";
-    const FULL_NAME: &str = "Anas Elgarhy";
+    const FIRST_NAME: &str = "Ahmed";
+    const LAST_NAME: &str = "Ahmed";
+    const FULL_NAME: &str = "Ahmed Ahmed";
 
     struct Context {
         super_villain: SuperVillain,
@@ -61,6 +66,26 @@ mod tests {
         }
         /// Clean up after tests.
         fn teardown(self) {
+            // Nothing to do here.
+        }
+    }
+
+    struct AsyncContext {
+        super_villain: SuperVillain,
+    }
+
+    #[async_trait::async_trait]
+    impl AsyncTestContext for AsyncContext {
+        async fn setup() -> Self {
+            AsyncContext {
+                super_villain: SuperVillain {
+                    first_name: FIRST_NAME.to_string(),
+                    last_name: LAST_NAME.to_string(),
+                },
+            }
+        }
+
+        async fn teardown(self) {
             // Nothing to do here.
         }
     }
@@ -112,5 +137,13 @@ mod tests {
             assert_eq!(super_villain.first_name, FIRST_NAME, "Unsuspected first name");
             assert_eq!(super_villain.last_name, LAST_NAME, "Unsuspected last name");
         })
+    }
+
+    #[test_context(AsyncContext)]
+    #[tokio::test]
+    async fn plan_is_sadly_expected(ctx: &mut AsyncContext) {
+        assert_eq!(ctx.super_villain.come_up_with_plan().await,
+                   format!("{} {} is coming up with a plan {}", ctx.super_villain.first_name,
+                           ctx.super_villain.last_name, "To take over the world!"))
     }
 }
